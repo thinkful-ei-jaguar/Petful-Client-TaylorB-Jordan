@@ -1,2 +1,4 @@
 # DSA-Petful
-For EI petful project
+For EI petful project - React, Node, DSA
+
+
