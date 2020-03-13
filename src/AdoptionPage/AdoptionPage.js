@@ -1,5 +1,4 @@
 import React, { Component} from 'react';
-import config from '../config'
 
 import NextAvail from '../NextAvail/NextAvail'
 import UsersPlace from '../UsersPlace/UsersPlace'
@@ -14,25 +13,25 @@ export default class AdoptionPage extends Component {
 
   componentDidMount() {
     const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats} = this.context;
-    // DogService.getNextAvailDog()
-    //   .then(res => {
-    //     setAvailDog(res)
-    //   })
+    DogService.getNextAvailDog()
+      .then(res => {
+        setAvailDog(res)
+      })
 
-    // DogService.getAllOtherDogs()
-    //   .then(res => {
-    //     setAllOtherDogs(res)
-    //   })
+    DogService.getAllOtherDogs()
+      .then(res => {
+        setAllOtherDogs(res)
+      })
 
     CatService.getNextAvailCat()
       .then(res => {
         setAvailCat(res)
       })
 
-    // CatService.getAllOtherCats()
-    //   .then(res => {
-    //     setAllOtherCats(res)
-    //   })
+    CatService.getAllOtherCats()
+      .then(res => {
+        setAllOtherCats(res)
+      })
   }
 
   render() {
@@ -57,12 +56,14 @@ export default class AdoptionPage extends Component {
           <button className='AP_adopt_button' type='button'>
             Adopt!
           </button>
-
+          {allOtherCats.map(cat => 
           <InlinePets 
-            name='' 
-            breed='' 
-            age=''
+            name={cat.name} 
+            breed={cat.breed} 
+            age={cat.age}
           />
+          )}
+          
         </div>
 
         <div className='AP_dogs'>
@@ -73,16 +74,19 @@ export default class AdoptionPage extends Component {
             desc={availDog.description}
             gender={availDog.gender} 
             story={availDog.story}
+            image={availDog.imageURL}
           />
           <button className='AP_adopt_button' type='button'>
             Adopt!
           </button>
 
+          {allOtherDogs.map(dog => 
           <InlinePets 
-            name='' 
-            breed='' 
-            age=''
+            name={dog.name} 
+            breed={dog.breed} 
+            age={dog.age}
           />
+          )}
         </div >
 
         <div className='AP_people'>

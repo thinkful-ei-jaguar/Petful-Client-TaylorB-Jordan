@@ -6,13 +6,13 @@ export default class InlinePets extends Component {
       <>
         <div className='InlinePets_container'>
           <p className='InlinePets_info'>
-            Name
+            {this.props.name}
           </p>
           <p className='InlinePets_info'>
-            Breed
+            {this.props.breed}
           </p>
           <p className='InlinePets_info'>
-            Age
+            {this.props.age}
           </p>
         </div>
       </>

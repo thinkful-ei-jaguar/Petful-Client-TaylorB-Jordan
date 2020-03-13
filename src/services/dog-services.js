@@ -2,7 +2,7 @@ import config from '../config'
 
 const DogService = {
   getNextAvailDog() {
-    fetch(`${config.API_ENDPOINT}/pets/dog`, {
+    return fetch(`${config.API_ENDPOINT}/pets/dog`, {
       method: 'GET',
       headers: {
         'content-type': 'application/json'
@@ -10,9 +10,8 @@ const DogService = {
     })
     .then(res => {
       if (!res.ok) {
-        Promise.reject()
+        return res.json().then(e => Promise.reject(e))
       }
-      console.log(res, 'res')
       return res.json()
     })
     .catch(err => {
@@ -20,9 +19,23 @@ const DogService = {
     })
   },
 
-  // getAllOtherDogs = () => {
-
-  // },
+  getAllOtherDogs(){
+    return fetch(`${config.API_ENDPOINT}/pets/dogs`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(e => Promise.reject(e))
+      }
+      return res.json()
+    })
+    .catch(err => {
+      console.error({err})
+    })
+  },
 
   // removeDog =() => {
 
