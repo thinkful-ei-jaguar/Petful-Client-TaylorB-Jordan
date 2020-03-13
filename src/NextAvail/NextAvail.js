@@ -4,24 +4,27 @@ export default class NextAvail extends Component {
   render() {
     return (
       <>
-        <h2 className='NA_pet_name'>Pet's Name</h2>
-        <img src='' alt=''/>
+        <h2 className='NA_pet_name'>
+          {this.props.name}
+        </h2>
+
+        <img src={this.props.image} alt=''/>
 
         <div className='Next_info_container'>
-          <p className='Next_info'>
-            Age
+          <p className='Next_info'> Age: 
+            {this.props.age}
           </p>
           <p className='Next_info'>
-            Breed
+            {this.props.breed}
           </p>
           <p className='Next_info'>
-            Description
+            {this.props.description}
           </p>
           <p className='Next_info'>
-            Gender
+            {this.props.gender}
           </p>
           <p className='Next_info'>
-            Story
+            {this.props.story}
           </p>
         </div>
       </>
