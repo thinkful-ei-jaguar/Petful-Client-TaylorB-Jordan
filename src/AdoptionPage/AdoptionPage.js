@@ -1,11 +1,12 @@
 import React, { Component} from 'react';
 
 import NextAvail from '../NextAvail/NextAvail'
+import UserList from '../UserList/UserList'
 import UsersPlace from '../UsersPlace/UsersPlace'
 import InlinePets from '../InlinePets/InlinePets'
 import DogService from '../services/dog-services';
 import CatService from '../services/cat-services'
-// import PeopleService from '../services/people-services'
+import PeopleService from '../services/people-services'
 import ApiContext from '../ApiContext'
 
 export default class AdoptionPage extends Component {
@@ -21,7 +22,7 @@ export default class AdoptionPage extends Component {
   }
 
   componentDidMount() {
-    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats} = this.context;
+    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople} = this.context;
     DogService.getNextAvailDog()
       .then(res => {
         setAvailDog(res)
@@ -41,6 +42,11 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setAllOtherCats(res)
       })
+
+      PeopleService.getUsersInline()
+      .then(res => {
+        setPeople(res)
+      })
   }
 
   handleCatAdoptClick(setAvailCat) {
@@ -58,7 +64,7 @@ export default class AdoptionPage extends Component {
   }
 
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats, setAvailCat, setAvailDog } = this.context;
+    const { availDog, allOtherDogs, availCat, allOtherCats, person, people, setAvailCat, setAvailDog } = this.context;
 
     
     return (
@@ -114,12 +120,15 @@ export default class AdoptionPage extends Component {
 
         <div className='AP_people'>
           <UsersPlace 
-            name='' 
+            name={person.name} 
             position=''
           />
 
           <p>People in line before you: </p>
-          {/* List of people in line before the user */}
+          {people.map(human => 
+            <UserList
+              name={human}
+              />)}
         </div>
       </>
     )

@@ -5,10 +5,14 @@ const ApiContext = React.createContext({
   allOtherDogs: [],
   availCat: {},
   allOtherCats: [],
+  person: {},
+  people: [],
   setAvailDog: () => {},
   setAllOtherDogs : () => {},
   setAvailCat: () => {},
   setAllOtherCats: () => {},
+  setPerson: () => {},
+  setPeople: () => {}
 });
 
 export class ApiContextProvider extends Component {
@@ -17,6 +21,8 @@ export class ApiContextProvider extends Component {
     allOtherDogs: [],
     availCat: {},
     allOtherCats: [],
+    person: '',
+    people: []
   };
 
   setAvailDog = (dog) => {
@@ -43,8 +49,16 @@ export class ApiContextProvider extends Component {
     })
   }
 
-  handleCatAdopted = () => {
-    
+  setPerson = (human) => {
+    this.setState({
+      person: human
+    })
+  }
+
+  setPeople = (humans) => {
+    this.setState({
+      people: humans
+    })
   }
 
   render() {
@@ -53,10 +67,14 @@ export class ApiContextProvider extends Component {
       allOtherDogs: this.state.allOtherDogs,
       availCat: this.state.availCat,
       allOtherCats: this.state.allOtherCats,
+      person: this.state.person,
+      people: this.state.people,
       setAvailDog: this.setAvailDog,
       setAllOtherDogs: this.setAllOtherDogs,
       setAvailCat: this.setAvailCat,
       setAllOtherCats: this.setAllOtherCats,
+      setPerson: this.setPerson,
+      setPeople: this.setPeople
     }
     return(
       <ApiContext.Provider value={value}>

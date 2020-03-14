@@ -5,7 +5,7 @@ export default class UsersPlace extends Component {
     return (
       <>
         <h3 className='UsersPlace_name'>
-          Users Name
+          {this.props.name}
         </h3>
         <p className='UsersPlace_place'>
           Your place in line: 
