@@ -43,6 +43,10 @@ export class ApiContextProvider extends Component {
     })
   }
 
+  handleCatAdopted = () => {
+    
+  }
+
   render() {
     const value = {
       availDog: this.state.availDog,

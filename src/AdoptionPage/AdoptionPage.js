@@ -10,6 +10,15 @@ import ApiContext from '../ApiContext'
 
 export default class AdoptionPage extends Component {
   static contextType = ApiContext;
+  constructor(props) {
+    super(props)
+    this.state ={ 
+      availDog : {},
+      allOtherDogs: [],
+      availCat: {},
+      allOtherCats: [],
+    }
+  }
 
   componentDidMount() {
     const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats} = this.context;
@@ -34,8 +43,22 @@ export default class AdoptionPage extends Component {
       })
   }
 
+  handleCatAdoptClick(setAvailCat) {
+    CatService.adoptedCat()
+    .then(res=> {
+      setAvailCat(res)
+    })
+  }
+
+  handleDogAdoptClick(setAvailDog) {
+    DogService.adoptedDog()
+    .then(res => {
+      setAvailDog(res)
+    })
+  }
+
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats } = this.context;
+    const { availDog, allOtherDogs, availCat, allOtherCats, setAvailCat, setAvailDog } = this.context;
 
     
     return (
@@ -53,7 +76,7 @@ export default class AdoptionPage extends Component {
             story={availCat.story} 
             image={availCat.imageURL}
           />
-          <button className='AP_adopt_button' type='button'>
+          <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat)}>
             Adopt!
           </button>
           {allOtherCats.map(cat => 
@@ -76,7 +99,7 @@ export default class AdoptionPage extends Component {
             story={availDog.story}
             image={availDog.imageURL}
           />
-          <button className='AP_adopt_button' type='button'>
+          <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog)}>
             Adopt!
           </button>
 

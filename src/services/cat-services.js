@@ -1,4 +1,5 @@
 import config from '../config'
+// import {setAvailCat} from '../ApiContext'
 
 const CatService = {
   getNextAvailCat() {
@@ -36,6 +37,27 @@ const CatService = {
       console.error({err})
     })
   },
+
+  adoptedCat() {
+    return fetch(`${config.API_ENDPOINT}/pets/cat/adopt`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    .then(res => {
+      if(!res.ok) {
+        return res.json().then(e => Promise.reject(e))
+      }
+      // return res.json()
+    })
+    .then(res => {
+      return this.getNextAvailCat();
+    })
+    .catch(err => {
+      console.error({err})
+    })
+  }
 
 }
 
