@@ -8,19 +8,15 @@ import './Home.css'
 export default class Home extends Component {
   static contextType = ApiContext
 
-  handleAdoptClick = (e) => {
-    const {setPerson, people} = this.context
+  handleAdoptClick = () => {
+    const {setPerson} = this.context
     const newPerson = {name: 'Thinkful'}
     PeopleService.postNewPerson(newPerson)
-      .then(res => {
-        setPerson(res)
-      })
-
-    const lastPerson = people.filter(human => human.name !== newPerson.name)
-    // setPerson(lastPerson)
-    
+    setPerson(newPerson.name)
   }
+
   render() {
+    const {person} = this.context
     return (
       <>
         <h2 className='Home_header'>Welcome to Petful</h2>
@@ -35,7 +31,7 @@ export default class Home extends Component {
           <label className='Home_label'>
             Click  Here to Get In Line and Begin the Adoption Process
           </label>
-          <button type='button' className='Home_button' onClick={(e) => this.handleAdoptClick(e)}>
+          <button type='button' className='Home_button' onClick={() => this.handleAdoptClick(person)}>
             <Link to='/adoption-page' className='Home_button'>
               Adoptable Pets
             </Link>

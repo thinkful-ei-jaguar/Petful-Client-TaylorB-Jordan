@@ -5,7 +5,7 @@ const ApiContext = React.createContext({
   allOtherDogs: [],
   availCat: {},
   allOtherCats: [],
-  person: [],
+  person: '',
   personPosition: '',
   people: [],
   setAvailDog: () => {},
@@ -22,7 +22,7 @@ export class ApiContextProvider extends Component {
     allOtherDogs: [],
     availCat: {},
     allOtherCats: [],
-    person: [],
+    person: '',
     personPosition: '',
     people: []
   };

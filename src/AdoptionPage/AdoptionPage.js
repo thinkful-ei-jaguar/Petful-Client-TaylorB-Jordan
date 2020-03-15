@@ -19,12 +19,12 @@ export default class AdoptionPage extends Component {
       allOtherDogs: [],
       availCat: {},
       allOtherCats: [],
-      person: {}
+      person: ''
     }
   }
 
   componentDidMount() {
-    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, person, setPersonPosition} = this.context;
+    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, person, setPerson, setPersonPosition} = this.context;
     console.log(person, 'person from context')
 
     DogService.getNextAvailDog()
@@ -52,11 +52,16 @@ export default class AdoptionPage extends Component {
       setPeople(res)
     })
 
-    PeopleService.getUsersPlace(person.person)
+    PeopleService.getUser()
+      .then(res => {
+        setPerson(res)
+      })
+
+    PeopleService.getUsersPlace(person)
       .then(res => {
         console.log(res, 'res from position endpoint')
         setPersonPosition(res)
-      })
+      }) 
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats) {
@@ -148,9 +153,9 @@ export default class AdoptionPage extends Component {
         
         <div className='AP_people'>
           <UsersPlace 
-            name={person.person} 
+            name={person} 
             position={personPosition}
-            key={person.person}
+            key={person}
           />
 
           <div className='AP_people_inline'>
