@@ -1,0 +1,15 @@
+.InlinePets_container {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid black;
+  margin: 10px auto;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.name {
+  margin-left: 20px;
+}
+.age {
+  margin-right: 20px;
+}

@@ -1,8 +1,6 @@
 import config from '../config'
 
 const PeopleService = {
-  
-
   postNewPerson(newPerson) {
     return fetch(`${config.API_ENDPOINT}/people`, {
       method: 'POST',
@@ -43,7 +41,21 @@ const PeopleService = {
   },
 
   getUsersPlace () {
-
+    return fetch(`${config.API_ENDPOINT}/people/position`, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(e => Promise.reject(e))
+      }
+      return res.json()
+    })
+    .catch(err => {
+      console.error({err})
+    }) 
   }
 }
 

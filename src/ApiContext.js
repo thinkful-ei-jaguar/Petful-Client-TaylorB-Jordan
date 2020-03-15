@@ -5,7 +5,8 @@ const ApiContext = React.createContext({
   allOtherDogs: [],
   availCat: {},
   allOtherCats: [],
-  person: {},
+  person: [],
+  personPosition: '',
   people: [],
   setAvailDog: () => {},
   setAllOtherDogs : () => {},
@@ -21,7 +22,8 @@ export class ApiContextProvider extends Component {
     allOtherDogs: [],
     availCat: {},
     allOtherCats: [],
-    person: '',
+    person: [],
+    personPosition: '',
     people: []
   };
 
@@ -53,6 +55,13 @@ export class ApiContextProvider extends Component {
     this.setState({
       person: human
     })
+    // console.log(this.state.person, 'person')
+  }
+
+  setPersonPosition = (position) => {
+    this.setState({
+      personPosition : position
+    })
   }
 
   setPeople = (humans) => {
@@ -68,12 +77,14 @@ export class ApiContextProvider extends Component {
       availCat: this.state.availCat,
       allOtherCats: this.state.allOtherCats,
       person: this.state.person,
+      personPosition: this.state.personPosition,
       people: this.state.people,
       setAvailDog: this.setAvailDog,
       setAllOtherDogs: this.setAllOtherDogs,
       setAvailCat: this.setAvailCat,
       setAllOtherCats: this.setAllOtherCats,
       setPerson: this.setPerson,
+      setPersonPosition: this.setPersonPosition,
       setPeople: this.setPeople
     }
     return(

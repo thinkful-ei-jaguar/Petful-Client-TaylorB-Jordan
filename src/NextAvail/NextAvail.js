@@ -1,30 +1,30 @@
 import React, { Component} from 'react';
+import './NextAvail.css'
 
 export default class NextAvail extends Component {
   render() {
     return (
       <>
-        <h2 className='NA_pet_name'>
-          {this.props.name}
-        </h2>
-
-        <img src={this.props.image} alt=''/>
+        <img src={this.props.image} alt='available pet' className='Next_avail_image'/>
 
         <div className='Next_info_container'>
-          <p className='Next_info'> Age: 
-            {this.props.age}
+          <p className='Next_info'> 
+            Name: {this.props.name}
+          </p>
+          <p className='Next_info'> 
+            Age: {this.props.age}
           </p>
           <p className='Next_info'>
-            {this.props.breed}
+            Breed: {this.props.breed}
           </p>
           <p className='Next_info'>
             {this.props.description}
           </p>
           <p className='Next_info'>
-            {this.props.gender}
+            Sex: {this.props.gender}
           </p>
           <p className='Next_info'>
-            {this.props.story}
+            {this.props.name}'s Story: {this.props.story}
           </p>
         </div>
       </>

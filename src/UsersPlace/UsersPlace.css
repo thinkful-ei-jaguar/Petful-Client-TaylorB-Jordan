@@ -1,0 +1,7 @@
+.UsersPlace_container{
+  border: 1px solid black;
+  width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
