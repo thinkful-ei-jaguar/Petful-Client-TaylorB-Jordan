@@ -19,7 +19,11 @@ export default class AdoptionPage extends Component {
       allOtherDogs: [],
       availCat: {},
       allOtherCats: [],
-      person: ''
+      person: '',
+      personPosition: '',
+      successfulAdopt : false,
+      adoptee: {},
+      human: ''
     }
   }
 
@@ -55,12 +59,27 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setPerson(res.name)
         setPersonPosition(res.position)
+        this.setState({
+          person: res.name,
+          personPosition: res.position
+        })
       }) 
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople) {
+    
     CatService.adoptedCat()
     .then(res=> {
+      console.log(res, 'res from adoptedCat')
+      this.setState({
+        successfulAdopt: true,
+        adoptee: res.adoptee,
+        human: res.human
+      })
+    })
+
+    CatService.getNextAvailCat()
+    .then(res => {
       setAvailCat(res)
     })
 
@@ -69,10 +88,15 @@ export default class AdoptionPage extends Component {
         setAllOtherCats(res)
       })
 
-      PeopleService.getUsersPlace(person)
+      PeopleService.getUsersPlace(this.state.person)
       .then(res => {
+        console.log(res, 'res from people service')
         setPerson(res.name)
         setPersonPosition(res.position)
+        this.setState({
+          person: res.name,
+          personPosition: res.position
+        })
       }) 
 
       PeopleService.getUsersInline()
@@ -92,10 +116,14 @@ export default class AdoptionPage extends Component {
       setAllOtherDogs(res)
     })
 
-    PeopleService.getUsersPlace(person)
+    PeopleService.getUsersPlace(this.state.person)
       .then(res => {
         setPerson(res.name)
         setPersonPosition(res.position)
+        this.setState({
+          person: res.name,
+          personPosition: res.position
+        })
       }) 
 
     PeopleService.getUsersInline()
@@ -104,8 +132,23 @@ export default class AdoptionPage extends Component {
       })
   }
 
+  handleClearSuccess() {
+    this.setState({
+      successfulAdopt: false
+    })
+  }
+
+  renderSuccessAdopt(human, pet) {
+    return (
+      <div className='AP_success_adopt'>
+        <p>Yay! {pet} was adopted by {human}!</p><span onClick={this.handleClearSuccess}> X </span>
+      </div>
+    )
+  }
+
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats, person, personPosition, people, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs } = this.context;
+    const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs } = this.context;
+
     
     return (
       <>
@@ -132,6 +175,11 @@ export default class AdoptionPage extends Component {
             )}
           </div>
         </div>
+
+        {/* render success message if successful adoption  */}
+        {this.state.successfulAdopt ? 
+        this.renderSuccessAdopt(this.state.human, this.state.adoptee.name) 
+        : null}
         
         <div className='AP_pets_container'>
           <div className='AP_cats'>

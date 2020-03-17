@@ -49,11 +49,11 @@ const CatService = {
       if(!res.ok) {
         return res.json().then(e => Promise.reject(e))
       }
-      // return res.json()
+      return res.json()
     })
-    .then(res => {
-      return this.getNextAvailCat();
-    })
+    // .then(res => {
+    //   return this.getNextAvailCat();
+    // })
     .catch(err => {
       console.error({err})
     })
