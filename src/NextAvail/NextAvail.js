@@ -4,7 +4,7 @@ import './NextAvail.css'
 export default class NextAvail extends Component {
   render() {
     return (
-      <>
+      <section className='NextAvail'>
         <img src={this.props.image} alt='available pet' className='Next_avail_image'/>
 
         <div className='Next_info_container'>
@@ -27,7 +27,7 @@ export default class NextAvail extends Component {
             {this.props.name}'s Story: {this.props.story}
           </p>
         </div>
-      </>
+      </section>
     )
   }
 }

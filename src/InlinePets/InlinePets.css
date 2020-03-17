@@ -3,13 +3,31 @@
   flex-direction: row;
   border: 1px solid black;
   margin: 10px auto;
-  width: 100%;
-  justify-content: space-between;
+  width: 80%;
+  /* justify-content: space-between; */
+  padding: 5px 10px;
 }
 
-.name {
+.InlinePets_info{
+  display: flex;
+  flex-direction: column;
+  width: 33.33%;
+}
+
+.InlinePets_info > .title, 
+.InlinePets_info > .content {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.InlinePets_info > .title {
+  opacity: 80%;
+}
+
+/* .name {
   margin-left: 20px;
 }
 .age {
   margin-right: 20px;
-}
+} */

@@ -93,9 +93,11 @@ export default class AdoptionPage extends Component {
     
     return (
       <>
-        <h2 className='AP_header'>Adoptable Pets</h2>
-        <h3 className='AP_description'>description of how adoption pets works</h3>
-
+        <header className='AP_header_container'>
+          <h2 className='AP_header'>Adoptable Pets</h2>
+          <h3 className='AP_description'>description of how adoption pets works</h3>
+        </header>
+        
         <div className='AP_pets_container'>
           <div className='AP_cats'>
             <p className='AP_next_avail'>Adoptable Cat</p> 
@@ -109,9 +111,12 @@ export default class AdoptionPage extends Component {
               image={availCat.imageURL}
               key={availCat.name}
             />
-            <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats)}>
-              Adopt!
-            </button>
+            <div className='AP_adopt_button'>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats)}>
+                Adopt!
+              </button>
+            </div>
+           
             <p className='AP_next_avail'>Next Available Cats</p> 
             {allOtherCats.map(cat => 
               <InlinePets 
@@ -135,9 +140,13 @@ export default class AdoptionPage extends Component {
               image={availDog.imageURL}
               key={availDog.name}
             />
-            <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs)}>
-              Adopt!
-            </button>
+
+            <div className='AP_adopt_button'>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs)}>
+                Adopt!
+              </button>
+            </div>
+            
 
             <p className='AP_next_avail'>Next Available Dogs</p> 
             {allOtherDogs.map(dog => 
@@ -148,18 +157,20 @@ export default class AdoptionPage extends Component {
                 key={dog.name}
               />
             )}
-          </div >
+          </div>
         </div>
         
         <div className='AP_people'>
-          <UsersPlace 
-            name={person} 
-            position={personPosition}
-            key={person}
-          />
+          <div >
+            <UsersPlace 
+              name={person} 
+              position={personPosition}
+              key={person}
+            />
+          </div>
 
           <div className='AP_people_inline'>
-            <p>People in line before you: </p>
+            <h4 className='AP_people_inline_header'>People in line before you: </h4>
             {people.map(human => 
               <UserList
                 name={human}
@@ -167,6 +178,7 @@ export default class AdoptionPage extends Component {
             )}
           </div>
         </div>
+        
       </>
     )
   }

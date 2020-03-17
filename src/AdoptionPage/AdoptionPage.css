@@ -1,6 +1,17 @@
+.AP_header_container{
+  padding: 10px;
+  margin: 0;
+}
+
+.AP_header{
+  font-size: 30px;
+  text-shadow: 2px 2px 2px rgba(206,89,55,0);
+  
+}
+
 .AP_header,
 .AP_description {
-  margin: 10px auto;
+  margin: 15px 0;
   text-align: center;
 }
 
@@ -29,13 +40,21 @@
   margin: auto;
 }
 
-/* .AP_people {
-  
-} */
+.AP_people {
+  width: 80%;
+  padding: 10px 0;
+  margin: auto;
+}
+
+.AP_people_inline_header{
+  margin-bottom: 0px;
+  text-align: center;
+}
 
 .AP_people_inline {
-  width: 80%;
-  margin: auto;
+  width: 100%;
+  margin-right: 0px;
+  margin-bottom: 50px;
   display: flex;
   flex-direction: column;
 }

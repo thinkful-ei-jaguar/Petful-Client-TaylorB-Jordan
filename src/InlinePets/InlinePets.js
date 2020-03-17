@@ -6,15 +6,32 @@ export default class InlinePets extends Component {
     return (
       <>
         <div className='InlinePets_container'>
-          <p className='InlinePets_info name'>
-            Name: {this.props.name}
-          </p>
-          <p className='InlinePets_info breed'>
-            Breed: {this.props.breed}
-          </p>
-          <p className='InlinePets_info age'>
-            Age: {this.props.age}
-          </p>
+          <div className='InlinePets_info name'>
+            <p className='title'>
+              Name: 
+            </p>
+            <div className='content'>
+            {this.props.name}
+            </div>
+          </div>
+
+          <div className='InlinePets_info'>
+            <p className='title'>
+              Breed: 
+            </p>
+            <div className='content'>
+            {this.props.breed}
+            </div>
+          </div>
+
+          <div className='InlinePets_info age' >
+            <p className='title'>
+              Age: 
+            </p>
+            <div className='content'>
+              {this.props.age}
+            </div>
+          </div>
         </div>
       </>
     )

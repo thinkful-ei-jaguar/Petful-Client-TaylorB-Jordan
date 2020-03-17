@@ -1,3 +1,11 @@
+.NextAvail {
+  padding: 0 10px;
+}
+
+.Next_info_container {
+  text-align: center;
+}
+
 .NA_pet_name {
   margin: auto;
   text-align: center;

@@ -9,7 +9,7 @@ class Root extends Component {
   render() {
     return (
       <main className='App'>
-        <h1 className='Root_header'>
+        <h1 className='Root_header' style={{color: '#A63D40'}}>
           Petful
         </h1>
         <Switch>
