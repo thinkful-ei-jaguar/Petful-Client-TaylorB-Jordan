@@ -5,9 +5,10 @@ export default class NextAvail extends Component {
   render() {
     return (
       <section className='NextAvail'>
-        <img src={this.props.image} alt='available pet' className='Next_avail_image'/>
-
         <div className='Next_info_container'>
+          <img src={this.props.image} alt='available pet' className='Next_avail_image'/>
+
+        
           <p className='Next_info'> 
             Name: {this.props.name}
           </p>

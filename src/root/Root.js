@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import Home from '../Home/Home';
 import AdoptionPage from '../AdoptionPage/AdoptionPage';
+import '../Home/Home.css'
 // import AddPet from '';
 
 class Root extends Component {
@@ -9,9 +10,12 @@ class Root extends Component {
   render() {
     return (
       <main className='App'>
-        <h1 className='Root_header' style={{color: '#A63D40'}}>
-          Petful
-        </h1>
+        <header className='Root_header'>
+          <div>
+            Petful
+          </div>
+        </header>
+        
         <Switch>
           <Route 
           exact path='/'

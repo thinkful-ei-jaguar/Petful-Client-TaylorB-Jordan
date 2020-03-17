@@ -97,6 +97,25 @@ export default class AdoptionPage extends Component {
           <h2 className='AP_header'>Adoptable Pets</h2>
           <h3 className='AP_description'>description of how adoption pets works</h3>
         </header>
+
+        <div className='AP_people'>
+          <div >
+            <UsersPlace 
+              name={person} 
+              position={personPosition}
+              key={person}
+            />
+          </div>
+
+          <div className='AP_people_inline'>
+            <h4 className='AP_people_inline_header' style={{color: '#8CBCB9'}}>People in line before you: </h4>
+            {people.map(human => 
+              <UserList
+                name={human}
+              />
+            )}
+          </div>
+        </div>
         
         <div className='AP_pets_container'>
           <div className='AP_cats'>
@@ -155,25 +174,6 @@ export default class AdoptionPage extends Component {
                 breed={dog.breed} 
                 age={dog.age}
                 key={dog.name}
-              />
-            )}
-          </div>
-        </div>
-        
-        <div className='AP_people'>
-          <div >
-            <UsersPlace 
-              name={person} 
-              position={personPosition}
-              key={person}
-            />
-          </div>
-
-          <div className='AP_people_inline'>
-            <h4 className='AP_people_inline_header'>People in line before you: </h4>
-            {people.map(human => 
-              <UserList
-                name={human}
               />
             )}
           </div>

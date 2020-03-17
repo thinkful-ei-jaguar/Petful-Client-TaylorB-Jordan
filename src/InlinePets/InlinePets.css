@@ -1,7 +1,7 @@
 .InlinePets_container {
   display: flex;
   flex-direction: row;
-  border: 1px solid black;
+  border: 1px solid #E1BB80;
   margin: 10px auto;
   width: 80%;
   /* justify-content: space-between; */
@@ -23,6 +23,10 @@
 
 .InlinePets_info > .title {
   opacity: 80%;
+}
+
+.InlinePets_info > .content {
+  color: #265653;
 }
 
 /* .name {
