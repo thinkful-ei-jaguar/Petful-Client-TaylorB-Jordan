@@ -20,7 +20,7 @@ export default class Home extends Component {
     return (
       <>
         <h2 className='Home_header'>Welcome to Petful</h2>
-        <p className='Home_description'>description of how Petful works</p>
+        <p className='Home_description'>The Cats and Dogs who have been here the longest get adopted first. Adopters first in line get paired with a pet first.</p>
 
         <div className='Home_image'>
           <img src={homeImg} alt='cute cat and dog'/>

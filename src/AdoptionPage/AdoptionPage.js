@@ -25,7 +25,6 @@ export default class AdoptionPage extends Component {
 
   componentDidMount() {
     const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, person, setPerson, setPersonPosition} = this.context;
-    console.log(person, 'person from context')
 
     DogService.getNextAvailDog()
       .then(res => {
@@ -52,19 +51,14 @@ export default class AdoptionPage extends Component {
       setPeople(res)
     })
 
-    PeopleService.getUser()
-      .then(res => {
-        setPerson(res)
-      })
-
     PeopleService.getUsersPlace(person)
       .then(res => {
-        console.log(res, 'res from position endpoint')
-        setPersonPosition(res)
+        setPerson(res.name)
+        setPersonPosition(res.position)
       }) 
   }
 
-  handleCatAdoptClick(setAvailCat, setAllOtherCats) {
+  handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople) {
     CatService.adoptedCat()
     .then(res=> {
       setAvailCat(res)
@@ -74,9 +68,20 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setAllOtherCats(res)
       })
+
+      PeopleService.getUsersPlace(person)
+      .then(res => {
+        setPerson(res.name)
+        setPersonPosition(res.position)
+      }) 
+
+      PeopleService.getUsersInline()
+        .then(res => {
+          setPeople(res)
+        })
   }
 
-  handleDogAdoptClick(setAvailDog, setAllOtherDogs) {
+  handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople) {
     DogService.adoptedDog()
     .then(res => {
       setAvailDog(res)
@@ -86,16 +91,27 @@ export default class AdoptionPage extends Component {
     .then(res => {
       setAllOtherDogs(res)
     })
+
+    PeopleService.getUsersPlace(person)
+      .then(res => {
+        setPerson(res.name)
+        setPersonPosition(res.position)
+      }) 
+
+    PeopleService.getUsersInline()
+      .then(res => {
+        setPeople(res)
+      })
   }
 
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats, person, personPosition, people, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs } = this.context;
+    const { availDog, allOtherDogs, availCat, allOtherCats, person, personPosition, people, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs } = this.context;
     
     return (
       <>
         <header className='AP_header_container'>
           <h2 className='AP_header'>Adoptable Pets</h2>
-          <h3 className='AP_description'>description of how adoption pets works</h3>
+          <h3 className='AP_description'>The Cats and Dogs who have been here the longest get adopted first. Adopters first in line get paired with a pet first.</h3>
         </header>
 
         <div className='AP_people'>
@@ -108,7 +124,7 @@ export default class AdoptionPage extends Component {
           </div>
 
           <div className='AP_people_inline'>
-            <h4 className='AP_people_inline_header' style={{color: '#8CBCB9'}}>People in line before you: </h4>
+            <h4 className='AP_people_inline_header' style={{color: '#8CBCB9'}}>People in line: </h4>
             {people.map(human => 
               <UserList
                 name={human}
@@ -131,7 +147,7 @@ export default class AdoptionPage extends Component {
               key={availCat.name}
             />
             <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats)}>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople)}>
                 Adopt!
               </button>
             </div>
@@ -161,7 +177,7 @@ export default class AdoptionPage extends Component {
             />
 
             <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs)}>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
                 Adopt!
               </button>
             </div>
