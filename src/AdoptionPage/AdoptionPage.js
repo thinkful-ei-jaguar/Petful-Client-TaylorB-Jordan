@@ -15,12 +15,14 @@ export default class AdoptionPage extends Component {
   constructor(props) {
     super(props)
     this.state ={ 
+      nameSubmitted : null,
       availDog : {},
       allOtherDogs: [],
       availCat: {},
       allOtherCats: [],
       person: '',
       personPosition: '',
+      people: [],
       successfulAdopt : false,
       adoptee: {},
       human: ''
@@ -28,7 +30,10 @@ export default class AdoptionPage extends Component {
   }
 
   componentDidMount() {
-    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, person, setPerson, setPersonPosition} = this.context;
+    const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, setPerson, setPersonPosition} = this.context;
+
+    // get person from local storage 
+    let person = localStorage.getItem( 'Person' );
 
     DogService.getNextAvailDog()
       .then(res => {
@@ -55,19 +60,23 @@ export default class AdoptionPage extends Component {
       setPeople(res)
     })
 
-    PeopleService.getUsersPlace(person)
+    // If there is a Person in local storage, then we know that user has submitted their name to adopt. Therefore we want to get and keep track of that person's place in line
+    if(!!person){
+      PeopleService.getUsersPlace(person)
       .then(res => {
         setPerson(res.name)
         setPersonPosition(res.position)
         this.setState({
           person: res.name,
-          personPosition: res.position
+          personPosition: res.position,
+          nameSubmitted: true
         })
       }) 
+    } 
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople) {
-    
+    //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
     .then(res=> {
       console.log(res, 'res from adoptedCat')
@@ -77,17 +86,17 @@ export default class AdoptionPage extends Component {
         human: res.human
       })
     })
-
+    //sets the new next avail cat
     CatService.getNextAvailCat()
     .then(res => {
       setAvailCat(res)
     })
-
+    //resets all other cats in the queue
     CatService.getAllOtherCats()
       .then(res => {
         setAllOtherCats(res)
       })
-
+      //increments the persons place in line everytime a cat is adopted
       PeopleService.getUsersPlace(this.state.person)
       .then(res => {
         console.log(res, 'res from people service')
@@ -98,7 +107,7 @@ export default class AdoptionPage extends Component {
           personPosition: res.position
         })
       }) 
-
+      //updates the people in the line
       PeopleService.getUsersInline()
         .then(res => {
           setPeople(res)
@@ -106,16 +115,18 @@ export default class AdoptionPage extends Component {
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople) {
+    //Uses service to make a request to remove the adopted dog from the queue
     DogService.adoptedDog()
     .then(res => {
       setAvailDog(res)
     })
-
+    //resets all other dogs in the queue
     DogService.getAllOtherDogs()
     .then(res => {
       setAllOtherDogs(res)
     })
-
+    
+    //increments the persons place in line everytime a dog is adopted
     PeopleService.getUsersPlace(this.state.person)
       .then(res => {
         setPerson(res.name)
@@ -125,24 +136,75 @@ export default class AdoptionPage extends Component {
           personPosition: res.position
         })
       }) 
-
+      
     PeopleService.getUsersInline()
       .then(res => {
         setPeople(res)
       })
   }
 
-  handleClearSuccess() {
+  // handleClearSuccess() {
+  //   this.setState({
+  //     successfulAdopt: false
+  //   })
+  // }
+
+  // renderSuccessAdopt(human, pet) {
+  //   return (
+  //     <div className='AP_success_adopt'>
+  //       <p>Yay! {pet} was adopted by {human}!</p><span onClick={this.handleClearSuccess}> X </span>
+  //     </div>
+  //   )
+  // }
+
+  hanldeNameSubmit(e, setPerson, setPeople, setPersonPosition) {
+    e.preventDefault();
+    console.log('firing!')
+    const name = e.target.name.value;
+    //sets local storage with the person name just submitted
+    localStorage.setItem( 'Person', name )
+    //clears input value
+    e.target.name.value = ''
+    console.log(name, 'name from handle form')
+    const newPerson = {name};
+    //makes post request to server to add the new person to the queue
+    PeopleService.postNewPerson(newPerson)
     this.setState({
-      successfulAdopt: false
+      person: newPerson.name,
+      nameSubmitted: true
     })
+    setPerson(newPerson.name)
+    console.log(this.context.person, 'person in context')
+
+    //resets the people in line so the new person is included
+    PeopleService.getUsersInline()
+    .then(res => {
+      setPeople(res)
+    })
+    //gets new person position in line to set 
+    PeopleService.getUsersPlace(newPerson.name)
+      .then(res => {
+        setPerson(res.name)
+        setPersonPosition(res.position)
+        this.setState({
+          person: res.name,
+          personPosition: res.position
+        })
+        localStorage.setItem( 'Position', res.position )
+      }) 
   }
 
-  renderSuccessAdopt(human, pet) {
+  renderNameInput(){
+    const {setPerson, setPeople, setPersonPosition} = this.context
     return (
-      <div className='AP_success_adopt'>
-        <p>Yay! {pet} was adopted by {human}!</p><span onClick={this.handleClearSuccess}> X </span>
-      </div>
+      <section className='AP_name_input'>
+        <form onSubmit={e => this.hanldeNameSubmit(e, setPerson, setPeople, setPersonPosition)} className='Name_input_form'>
+          <label>Submit your name below to be added to the adoption line</label>
+          <input type='text' name='name'>
+          </input>
+          <button type='submit' className='AP_adopt_button'>Submit</button>
+        </form>
+      </section>
     )
   }
 
@@ -154,32 +216,40 @@ export default class AdoptionPage extends Component {
       <>
         <header className='AP_header_container'>
           <h2 className='AP_header'>Adoptable Pets</h2>
-          <h3 className='AP_description'>The Cats and Dogs who have been here the longest get adopted first. Adopters first in line get paired with a pet first.</h3>
+          <h3 className='AP_description'>Only the first human in line will be able to adopt a dog or cat. Once they have adopted their new furry friend, they will be removed from the line. Any humans not first in line will be unable to adopt until it is their turn. </h3>
         </header>
 
+        {/* if there is a person logged in local storage, that means they have submitted their name, therefore do not show the input form - show the tracking of their place in line */}
+        {!!person 
+          ?  <div >
+                <UsersPlace 
+                  name={person} 
+                  position={personPosition}
+                  key={person}
+                />
+            </div>
+          :  this.renderNameInput()
+        }
+           
+         
+
         <div className='AP_people'>
-          <div >
-            <UsersPlace 
-              name={person} 
-              position={personPosition}
-              key={person}
-            />
-          </div>
 
           <div className='AP_people_inline'>
             <h4 className='AP_people_inline_header' style={{color: '#8CBCB9'}}>People in line: </h4>
-            {people.map(human => 
+            {people.map((human, idx) => 
               <UserList
+                key={idx}
                 name={human}
               />
             )}
           </div>
         </div>
 
-        {/* render success message if successful adoption  */}
+        {/* render success message if successful adoption 
         {this.state.successfulAdopt ? 
         this.renderSuccessAdopt(this.state.human, this.state.adoptee.name) 
-        : null}
+        : null} */}
         
         <div className='AP_pets_container'>
           <div className='AP_cats'>
@@ -203,10 +273,10 @@ export default class AdoptionPage extends Component {
             <p className='AP_next_avail'>Next Available Cats</p> 
             {allOtherCats.map(cat => 
               <InlinePets 
+              key={cat.name}
                 name={cat.name} 
                 breed={cat.breed} 
                 age={cat.age}
-                key={cat.name}
               />
             )}
           </div>

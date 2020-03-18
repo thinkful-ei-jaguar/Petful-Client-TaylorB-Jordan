@@ -11,8 +11,37 @@
 
 .AP_header,
 .AP_description {
-  margin: 15px 0;
+  margin: 15px auto;
   text-align: center;
+  width: 60%;
+}
+
+.AP_description{
+  opacity: 80%;
+}
+
+.AP_name_input {
+  width: 50%;
+  margin: auto;
+  text-align: center;
+  padding: 10px;
+}
+
+.Name_input_form{
+  display: flex;
+  width: 60%;
+  flex-direction: column;
+  margin: auto;
+  text-align: center;
+  color: #265653;
+}
+
+.Name_input_form > input {
+  width: 60%;
+  margin: 10px auto;
+  padding: 10px;
+  border: 1px solid #265653;
+  border-radius: 30px;
 }
 
 .AP_success_adopt {

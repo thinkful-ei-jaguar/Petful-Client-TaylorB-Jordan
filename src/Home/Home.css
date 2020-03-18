@@ -25,6 +25,16 @@
   margin-bottom: 20px;
 }
 
+.Home_description{
+  margin: auto;
+  padding: 20px;
+  width: 50%;
+}
+
+/* .desc_break {
+ line-height: 10em;
+} */
+
 .Home_label {
   color: #8CBCB9;
 }

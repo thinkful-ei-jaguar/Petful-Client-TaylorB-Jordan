@@ -55,7 +55,7 @@ export class ApiContextProvider extends Component {
     this.setState({
       person: human
     })
-    console.log(this.state.person, 'person')
+    
   }
 
   setPersonPosition = (position) => {
