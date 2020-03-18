@@ -12,12 +12,16 @@ const ApiContext = React.createContext({
   succesfulAdopt: null,
   adoptee: {},
   human: '',
+  interval1: null,
+  interval2: null,
   setAvailDog: () => {},
   setAllOtherDogs : () => {},
   setAvailCat: () => {},
   setAllOtherCats: () => {},
   setPerson: () => {},
-  setPeople: () => {}
+  setPeople: () => {},
+  setInterval1: () => {},
+  setInterval2: () => {}
 });
 
 export class ApiContextProvider extends Component {
@@ -28,7 +32,9 @@ export class ApiContextProvider extends Component {
     allOtherCats: [],
     person: '',
     personPosition: '',
-    people: []
+    people: [],
+    interval1: null,
+    interval2: null,
   };
 
   setAvailDog = (dog) => {
@@ -74,6 +80,18 @@ export class ApiContextProvider extends Component {
     })
   }
 
+  setInterval1 = (interval1) => {
+    this.setState({
+      interval1
+    })
+  }
+
+  setInterval2 = (interval2) => {
+    this.setState({
+      interval2
+    })
+  }
+
   render() {
     const value = {
       availDog: this.state.availDog,
@@ -83,13 +101,17 @@ export class ApiContextProvider extends Component {
       person: this.state.person,
       personPosition: this.state.personPosition,
       people: this.state.people,
+      interval1: this.state.interval1,
+      interval2: this.state.interval2,
       setAvailDog: this.setAvailDog,
       setAllOtherDogs: this.setAllOtherDogs,
       setAvailCat: this.setAvailCat,
       setAllOtherCats: this.setAllOtherCats,
       setPerson: this.setPerson,
       setPersonPosition: this.setPersonPosition,
-      setPeople: this.setPeople
+      setPeople: this.setPeople,
+      setInterval1: this.setInterval1,
+      setInterval2: this.setInterval2
     }
     return(
       <ApiContext.Provider value={value}>
