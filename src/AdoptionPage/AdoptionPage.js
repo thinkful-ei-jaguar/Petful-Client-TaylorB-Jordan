@@ -21,7 +21,7 @@ export default class AdoptionPage extends Component {
       availCat: {},
       allOtherCats: [],
       person: '',
-      personPosition: '',
+      personPosition: 0,
       people: [],
       successfulAdopt : false,
       adoptee: {},
@@ -83,7 +83,7 @@ export default class AdoptionPage extends Component {
       this.interval = setInterval(() => {
         const intervalFuncs = [
           this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople), 
-          this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
+          //this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
         ];
 
         let randNum = Math.floor( Math.random() * intervalFuncs.length);
@@ -99,6 +99,24 @@ export default class AdoptionPage extends Component {
       // this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
       // }, 5000);
     } 
+  }
+
+    //generates randomized string for 'new people' in queue
+  makeid(length) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
+  addPeopleToQueue() {
+    const name = this.makeid(7)
+    if(this.state.successfulAdopt) {
+      PeopleService.postNewPerson({name})
+    }
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) {
@@ -123,6 +141,11 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setAllOtherCats(res)
       })
+      this.addPeopleToQueue()
+      PeopleService.getUsersInline()
+        .then(res => {
+          setPeople(res)
+        })
       //increments the persons place in line everytime a cat is adopted
       PeopleService.getUsersPlace(this.state.person)
       .then(res => {
@@ -135,11 +158,10 @@ export default class AdoptionPage extends Component {
         })
         localStorage.setItem( 'Position', res.position )
       }) 
+      
       //updates the people in the line
-      PeopleService.getUsersInline()
-        .then(res => {
-          setPeople(res)
-        })
+      
+      
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
@@ -243,6 +265,7 @@ export default class AdoptionPage extends Component {
 
     if(personPosition === 1){
       clearInterval(this.interval)
+      
     }
     
     return (
@@ -253,7 +276,7 @@ export default class AdoptionPage extends Component {
         </header>
 
         {/* if there is a person logged in local storage, that means they have submitted their name, therefore do not show the input form - show the tracking of their place in line */}
-        {!!person 
+        {!!person || person === undefined
           ?  <div >
                 <UsersPlace 
                   name={person} 
@@ -299,12 +322,12 @@ export default class AdoptionPage extends Component {
             />
 
             {(personPosition <= 1) 
-              ? null
-              : <div className='AP_adopt_button'>
-                  <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)}>
-                    Adopt!
-                  </button>
-                </div>
+              ? <div className='AP_adopt_button'>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)}>
+                Adopt!
+              </button>
+            </div>
+              : null
             }
             
            
@@ -332,13 +355,13 @@ export default class AdoptionPage extends Component {
               key={availDog.name}
             />
 
-            {(personPosition > 1)
-              ? null
-              : <div className='AP_adopt_button'>
-                  <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
-                    Adopt!
-                  </button>
-                </div>
+            {(personPosition <= 1)
+              ? <div className='AP_adopt_button'>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
+                Adopt!
+              </button>
+            </div>
+              : null
             }
 
             <p className='AP_next_avail'>Next Available Dogs</p> 
