@@ -34,6 +34,7 @@ export default class AdoptionPage extends Component {
 
     // get person from local storage 
     let person = localStorage.getItem( 'Person' );
+    let personPosition = localStorage.getItem( 'Position' );
 
     DogService.getNextAvailDog()
       .then(res => {
@@ -70,12 +71,19 @@ export default class AdoptionPage extends Component {
           person: res.name,
           personPosition: res.position,
           nameSubmitted: true
-        })
+        }) 
       }) 
     } 
+
+    this.interval = setInterval(() => {
+      this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
+    }, 5000);
+
+    
   }
 
-  handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople) {
+  handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) {
+    
     //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
     .then(res=> {
@@ -106,12 +114,15 @@ export default class AdoptionPage extends Component {
           person: res.name,
           personPosition: res.position
         })
+        localStorage.setItem( 'Position', res.position )
       }) 
       //updates the people in the line
       PeopleService.getUsersInline()
         .then(res => {
           setPeople(res)
         })
+
+    
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople) {
@@ -211,6 +222,9 @@ export default class AdoptionPage extends Component {
   render() {
     const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs } = this.context;
 
+    if(personPosition === 1){
+      clearInterval(this.interval)
+    }
     
     return (
       <>
@@ -264,11 +278,16 @@ export default class AdoptionPage extends Component {
               image={availCat.imageURL}
               key={availCat.name}
             />
-            <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, person, setPerson, setPersonPosition, setPeople)}>
-                Adopt!
-              </button>
-            </div>
+
+            {(personPosition <= 1) 
+              ? null
+              : <div className='AP_adopt_button'>
+                  <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)}>
+                    Adopt!
+                  </button>
+                </div>
+            }
+            
            
             <p className='AP_next_avail'>Next Available Cats</p> 
             {allOtherCats.map(cat => 
@@ -294,12 +313,14 @@ export default class AdoptionPage extends Component {
               key={availDog.name}
             />
 
-            <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
-                Adopt!
-              </button>
-            </div>
-            
+            {(personPosition > 1)
+              ? null
+              : <div className='AP_adopt_button'>
+                  <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
+                    Adopt!
+                  </button>
+                </div>
+            }
 
             <p className='AP_next_avail'>Next Available Dogs</p> 
             {allOtherDogs.map(dog => 
