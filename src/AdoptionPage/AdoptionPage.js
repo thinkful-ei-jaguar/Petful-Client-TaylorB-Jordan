@@ -1,9 +1,9 @@
 import React, { Component} from 'react';
-
 import NextAvail from '../NextAvail/NextAvail'
 import UserList from '../UserList/UserList'
 import UsersPlace from '../UsersPlace/UsersPlace'
 import InlinePets from '../InlinePets/InlinePets'
+// import AdoptionHelpers from './adoption-pg-helpers'
 import DogService from '../services/dog-services';
 import CatService from '../services/cat-services'
 import PeopleService from '../services/people-services'
@@ -74,34 +74,23 @@ export default class AdoptionPage extends Component {
         }) 
       }) 
 
-      // const intervalFuncs = [this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople), this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)]
-
-      // function randomNumber(n) {
-      //   return Math.floor( Math.random() * n);
-      // }
-
-      this.interval = setInterval(() => {
-        const intervalFuncs = [
-          this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople), 
-          //this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
-        ];
-
-        let randNum = Math.floor( Math.random() * intervalFuncs.length);
-
-       function getFunc (intervalFuncs, randNum) {
-        return intervalFuncs[ randNum ];
-       }
-        
-       getFunc(intervalFuncs, randNum);
-      }, 5000);
-
-      // this.interval = setInterval(() => {
-      // this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
-      // }, 5000);
+     //begins interval 
+        this.interval = setInterval(() => {
+          // const func1 =  this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople);
+          // const func2 = this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, setPerson, setPersonPosition, setPeople);
+          const intervalFuncs = [ this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) ];
+    
+         function getFunc (intervalFuncs) {
+          let randNum = Math.floor( Math.random() * intervalFuncs.length-1);
+          return intervalFuncs[ randNum ];
+         }
+          
+         getFunc(intervalFuncs);
+        }, 5000);
     } 
   }
 
-    //generates randomized string for 'new people' in queue
+  //generates randomized string for 'new people' in queue
   makeid(length) {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -112,11 +101,18 @@ export default class AdoptionPage extends Component {
     return result;
  }
 
-  addPeopleToQueue() {
+  addPeopleToQueue(setPeople) {
     const name = this.makeid(7)
-    if(this.state.successfulAdopt) {
+    // if(this.state.successfulAdopt) {
       PeopleService.postNewPerson({name})
-    }
+      PeopleService.getUsersInline()
+      .then(res => {
+        setPeople(res)
+        this.setState({
+          people: res
+        })
+      })
+    // }
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) {
@@ -141,77 +137,57 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setAllOtherCats(res)
       })
-      this.addPeopleToQueue()
-      PeopleService.getUsersInline()
-        .then(res => {
-          setPeople(res)
-        })
-      //increments the persons place in line everytime a cat is adopted
-      PeopleService.getUsersPlace(this.state.person)
-      .then(res => {
-        console.log(res, 'res from people service')
-        setPerson(res.name)
-        setPersonPosition(res.position)
-        this.setState({
-          person: res.name,
-          personPosition: res.position
-        })
-        localStorage.setItem( 'Position', res.position )
-      }) 
-      
-      //updates the people in the line
-      
-      
+    this.updatePeople(setPerson, setPersonPosition, setPeople);
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
     console.log('dog adopt firing!')
     //Uses service to make a request to remove the adopted dog from the queue
     DogService.adoptedDog()
+    .then(res=> {
+      console.log(res, 'res from adoptedDog')
+      this.setState({
+        successfulAdopt: true,
+        adoptee: res.adoptee,
+        human: res.human
+      })
+    })
+    //sets the new next avail cat
+    DogService.getNextAvailDog()
     .then(res => {
       setAvailDog(res)
     })
-    //resets all other dogs in the queue
+    //resets all other cats in the queue
     DogService.getAllOtherDogs()
-    .then(res => {
-      setAllOtherDogs(res)
-    })
-    
-    //increments the persons place in line everytime a dog is adopted
-    PeopleService.getUsersPlace(this.state.person)
       .then(res => {
-        setPerson(res.name)
-        setPersonPosition(res.position)
-        this.setState({
-          person: res.name,
-          personPosition: res.position
-        })
-        localStorage.setItem( 'Position', res.position )
-      }) 
-      
-    PeopleService.getUsersInline()
-      .then(res => {
-        setPeople(res)
+        setAllOtherDogs(res)
       })
+    this.updatePeople(setPerson, setPersonPosition, setPeople);
   }
 
-  // handleClearSuccess() {
-  //   this.setState({
-  //     successfulAdopt: false
-  //   })
-  // }
+  updatePeople(setPerson, setPersonPosition, setPeople) {
+    PeopleService.getUsersInline()
+    .then(res => {
+      setPeople(res)
+    })
+    //increments the persons place in line everytime a cat is adopted
+    PeopleService.getUsersPlace(this.state.person)
+    .then(res => {
+      console.log(res, 'res from people service')
+      setPerson(res.name)
+      setPersonPosition(res.position)
+      this.setState({
+        person: res.name,
+        personPosition: res.position
+      })
+      localStorage.setItem( 'Position', res.position )
+    }) 
+    //updates the people in the line
+  }
 
-  // renderSuccessAdopt(human, pet) {
-  //   return (
-  //     <div className='AP_success_adopt'>
-  //       <p>Yay! {pet} was adopted by {human}!</p><span onClick={this.handleClearSuccess}> X </span>
-  //     </div>
-  //   )
-  // }
-
-  hanldeNameSubmit(e, setPerson, setPeople, setPersonPosition) {
+  handleNameSubmit(e, setPerson, setPeople, setPersonPosition) {
     e.preventDefault();
-    console.log('firing!')
+    // const {setAvailCat, setAllOtherCats, personPosition, setAvailDog, setAllOtherDogs} = this.context
     const name = e.target.name.value;
     //sets local storage with the person name just submitted
     localStorage.setItem( 'Person', name )
@@ -226,13 +202,13 @@ export default class AdoptionPage extends Component {
       nameSubmitted: true
     })
     setPerson(newPerson.name)
-    console.log(this.context.person, 'person in context')
 
     //resets the people in line so the new person is included
     PeopleService.getUsersInline()
     .then(res => {
       setPeople(res)
     })
+
     //gets new person position in line to set 
     PeopleService.getUsersPlace(newPerson.name)
       .then(res => {
@@ -250,11 +226,15 @@ export default class AdoptionPage extends Component {
     const {setPerson, setPeople, setPersonPosition} = this.context
     return (
       <section className='AP_name_input'>
-        <form onSubmit={e => this.hanldeNameSubmit(e, setPerson, setPeople, setPersonPosition)} className='Name_input_form'>
-          <label>Submit your name below to be added to the adoption line</label>
+        <form onSubmit={e => this.handleNameSubmit(e, setPerson, setPeople, setPersonPosition)} className='Name_input_form'>
+          <label>
+            Submit your name below to be added to the adoption line
+          </label>
           <input type='text' name='name'>
           </input>
-          <button type='submit' className='AP_adopt_button'>Submit</button>
+          <button type='submit' className='AP_adopt_button'>
+            Submit
+          </button>
         </form>
       </section>
     )
@@ -265,7 +245,16 @@ export default class AdoptionPage extends Component {
 
     if(personPosition === 1){
       clearInterval(this.interval)
-      
+    }
+
+    if(people.length === 1) {
+      this.interval2 = setInterval(() => {
+        this.addPeopleToQueue(setPeople)
+      }, 5000)
+    }
+
+    if(this.state.people.length === 5) {
+      clearInterval(this.interval2)
     }
     
     return (
@@ -321,7 +310,7 @@ export default class AdoptionPage extends Component {
               key={availCat.name}
             />
 
-            {(personPosition <= 1) 
+            {(personPosition === 1 && !!person) 
               ? <div className='AP_adopt_button'>
               <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)}>
                 Adopt!
@@ -355,7 +344,7 @@ export default class AdoptionPage extends Component {
               key={availDog.name}
             />
 
-            {(personPosition <= 1)
+            {(personPosition === 1 && !!person)
               ? <div className='AP_adopt_button'>
               <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
                 Adopt!

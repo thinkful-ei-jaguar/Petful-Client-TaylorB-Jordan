@@ -1,7 +1,7 @@
 import React, { Component} from 'react';
 import { Link } from 'react-router-dom';
 import homeImg from './petful-cat-dog.jpg'
-import PeopleService from '../services/people-services'
+// import PeopleService from '../services/people-services'
 import ApiContext from '../ApiContext'
 import './Home.css'
 

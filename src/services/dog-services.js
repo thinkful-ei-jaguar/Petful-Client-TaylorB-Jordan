@@ -50,9 +50,9 @@ const DogService = {
       }
       return res.json()
     })
-    .then(res => {
-      return this.getNextAvailDog();
-    })
+    // .then(res => {
+    //   return this.getNextAvailDog();
+    // })
     .catch(err => {
       console.error({err})
     })

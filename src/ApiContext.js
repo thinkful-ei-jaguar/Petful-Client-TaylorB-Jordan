@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 const ApiContext = React.createContext({
+  nameSubmitted: null,
   availDog : {},
   allOtherDogs: [],
   availCat: {},
@@ -8,6 +9,9 @@ const ApiContext = React.createContext({
   person: '',
   personPosition: '',
   people: [],
+  succesfulAdopt: null,
+  adoptee: {},
+  human: '',
   setAvailDog: () => {},
   setAllOtherDogs : () => {},
   setAvailCat: () => {},

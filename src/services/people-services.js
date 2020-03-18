@@ -15,7 +15,7 @@ const PeopleService = {
       if (!res.ok) {
         return res.json().then(e => Promise.reject(e))
       }
-      return res.json()
+      // return res.json()
     })
     .catch(err => {
       console.error({err})
