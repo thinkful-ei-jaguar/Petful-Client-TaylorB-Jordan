@@ -73,17 +73,36 @@ export default class AdoptionPage extends Component {
           nameSubmitted: true
         }) 
       }) 
+
+      // const intervalFuncs = [this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople), this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)]
+
+      // function randomNumber(n) {
+      //   return Math.floor( Math.random() * n);
+      // }
+
+      this.interval = setInterval(() => {
+        const intervalFuncs = [
+          this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople), 
+          this.handleDogAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
+        ];
+
+        let randNum = Math.floor( Math.random() * intervalFuncs.length);
+
+       function getFunc (intervalFuncs, randNum) {
+        return intervalFuncs[ randNum ];
+       }
+        
+       getFunc(intervalFuncs, randNum);
+      }, 5000);
+
+      // this.interval = setInterval(() => {
+      // this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
+      // }, 5000);
     } 
-
-    this.interval = setInterval(() => {
-      this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)
-    }, 5000);
-
-    
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) {
-    
+    console.log('cat adopt firing!')
     //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
     .then(res=> {
@@ -121,11 +140,10 @@ export default class AdoptionPage extends Component {
         .then(res => {
           setPeople(res)
         })
-
-    
   }
 
-  handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople) {
+  handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
+    console.log('dog adopt firing!')
     //Uses service to make a request to remove the adopted dog from the queue
     DogService.adoptedDog()
     .then(res => {
@@ -146,6 +164,7 @@ export default class AdoptionPage extends Component {
           person: res.name,
           personPosition: res.position
         })
+        localStorage.setItem( 'Position', res.position )
       }) 
       
     PeopleService.getUsersInline()
