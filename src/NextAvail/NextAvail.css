@@ -1,0 +1,32 @@
+.NextAvail {
+  padding: 30px 10px;
+  box-shadow: 0px 0px 12px .5px rgba(38, 86, 83, 1);
+  /* box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75); */
+  margin: 20px auto;
+}
+
+.Next_info_container {
+  text-align: center;
+  margin: auto;
+}
+
+.NA_pet_name {
+  margin: auto;
+  text-align: center;
+}
+
+.Next_avail_image {
+  width: 90%;
+  margin: auto;
+}
+
+@media (min-width: 1050px) {
+  .NextAvail {
+    margin: auto 40px;
+  }
+
+  .Next_avail_image {
+    width: 70%;
+    margin: auto;
+  }
+}

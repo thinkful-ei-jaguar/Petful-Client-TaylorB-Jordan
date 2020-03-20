@@ -1,0 +1,17 @@
+.UsersPlace_container{
+  margin: auto;
+  /* padding: 20px; */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.UsersPlace_header {
+  text-align: center;
+  color: #265653;
+
+}
+
+.UsersPlace_name {
+  margin: 10px 0;
+}
