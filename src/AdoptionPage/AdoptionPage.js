@@ -3,7 +3,6 @@ import NextAvail from '../NextAvail/NextAvail'
 import UserList from '../UserList/UserList'
 import UsersPlace from '../UsersPlace/UsersPlace'
 import InlinePets from '../InlinePets/InlinePets'
-// import AdoptionHelpers from './adoption-pg-helpers'
 import DogService from '../services/dog-services';
 import CatService from '../services/cat-services'
 import PeopleService from '../services/people-services'
@@ -112,18 +111,10 @@ startInterval2(){
   }
 
   handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
-    console.log('cat adopt firing!')
+  
     //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
-    // .then(res=> {
-    //   console.log(res, 'res from adoptedCat')
-    //   this.setState({
-    //     successfulAdopt: true,
-    //     adoptee: res.adoptee,
-    //     human: res.human
-    //   })
-    // })
-    //sets the new next avail cat
+    
     CatService.getNextAvailCat()
     .then(res => {
       setAvailCat(res)
@@ -137,7 +128,6 @@ startInterval2(){
   }
 
   handleCatAdoptActuallyClicked(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
-    console.log('cat adopt firing!')
     //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
     .then(res=> {
@@ -166,11 +156,10 @@ startInterval2(){
   }
 
   handleDogAdoptActuallyClicked(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
-    console.log('Dog adopt firing!')
+  
     //Uses service to make a request to remove the adopted dog from the queue
     DogService.adoptedDog()
     .then(res=> {
-      console.log(res, 'res from adoptedDog')
       this.setState({
         successfulAdopt: true,
         adoptee: res.adoptee,
@@ -199,7 +188,6 @@ startInterval2(){
     //Uses service to make a request to remove the adopted dog from the queue
     DogService.adoptedDog()
     .then(res=> {
-      console.log(res, 'res from adoptedDog')
       this.setState({
         successfulAdopt: true,
         adoptee: res.adoptee,
@@ -240,18 +228,10 @@ startInterval2(){
           interval2
         })
       }
-      // this.setState({
-      //   person: res.name,
-      //   personPosition: res.position
-      // })
       localStorage.setItem( 'Position', res.position )
-    }) 
-    //updates the people in the line
-    // this.startInterval2()
-    
+    })
   }
 
-  //function get people length
   
 
   handleNameSubmit(e, setPerson, setPeople, setPersonPosition, setAvailCat, setAllOtherCats, personPosition) {
@@ -262,7 +242,6 @@ startInterval2(){
     localStorage.setItem( 'Person', name )
     //clears input value
     e.target.name.value = ''
-    console.log(name, 'name from handle form')
     const newPerson = {name};
     //makes post request to server to add the new person to the queue
     PeopleService.postNewPerson(newPerson)
@@ -281,19 +260,13 @@ startInterval2(){
     //gets new person position in line to set 
     PeopleService.getUsersPlace(newPerson.name)
       .then(res => {
-        // setPerson(res.name)
         setPersonPosition(res.position)
-        // this.setState({
-        //   person: res.name,
-        //   personPosition: res.position
-        // })
+        
         localStorage.setItem( 'Position', res.position )
       }) 
       
          //begins interval 
          const interval1 = setInterval(() => {
-          // const func1 =  this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople);
-          // const func2 = this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, setPerson, setPersonPosition, setPeople);
           const intervalFuncs = [ this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) ];
     
          function getFunc (intervalFuncs) {
@@ -346,7 +319,6 @@ startInterval2(){
     }
 
     if(people.length >= 5) {
-      console.log('FIRING!')
       clearInterval(this.state.interval2)
     }
     
