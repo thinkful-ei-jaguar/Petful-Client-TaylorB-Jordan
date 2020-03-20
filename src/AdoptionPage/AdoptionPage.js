@@ -76,7 +76,17 @@ export default class AdoptionPage extends Component {
     } 
   }
 
-  //generates randomized string for 'new people' in queue
+startInterval2(){
+  const { personPosition, setInterval2 } = this.context
+    if(personPosition === 1) {
+      console.log('setting interval 2')
+      setInterval2()
+    }
+}
+   
+
+
+  // generates randomized string for 'new people' in queue
   makeid(length) {
     let result = '';
     let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -92,27 +102,27 @@ export default class AdoptionPage extends Component {
     // if(this.state.successfulAdopt) {
       PeopleService.postNewPerson({name})
       PeopleService.getUsersInline()
-      // .then(res => {
-      //   setPeople(res)
-      //   this.setState({
-      //     people: res
-      //   })
-      // })
+      .then(res => {
+        setPeople(res)
+        this.setState({
+          people: res
+        })
+      })
     // }
   }
 
-  handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople) {
+  handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
     console.log('cat adopt firing!')
     //Uses service to make a request to remove the adopted cat from the queue
     CatService.adoptedCat()
-    .then(res=> {
-      console.log(res, 'res from adoptedCat')
-      this.setState({
-        successfulAdopt: true,
-        adoptee: res.adoptee,
-        human: res.human
-      })
-    })
+    // .then(res=> {
+    //   console.log(res, 'res from adoptedCat')
+    //   this.setState({
+    //     successfulAdopt: true,
+    //     adoptee: res.adoptee,
+    //     human: res.human
+    //   })
+    // })
     //sets the new next avail cat
     CatService.getNextAvailCat()
     .then(res => {
@@ -123,7 +133,7 @@ export default class AdoptionPage extends Component {
       .then(res => {
         setAllOtherCats(res)
       })
-    this.updatePeople(setPerson, setPersonPosition, setPeople);
+    this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
@@ -151,7 +161,7 @@ export default class AdoptionPage extends Component {
     this.updatePeople(setPerson, setPersonPosition, setPeople);
   }
 
-  updatePeople(setPerson, setPersonPosition, setPeople) {
+  updatePeople(setPerson, setPersonPosition, setPeople, setInterval2) {
     PeopleService.getUsersInline()
     .then(res => {
       setPeople(res)
@@ -162,13 +172,25 @@ export default class AdoptionPage extends Component {
       console.log(res, 'res from people service')
       setPerson(res.name)
       setPersonPosition(res.position)
-      this.setState({
-        person: res.name,
-        personPosition: res.position
-      })
+      if(res.position === 1) {
+        console.log('setting interval 2')
+        // setInterval2()
+        const interval2 = setInterval(() => {
+          this.addPeopleToQueue(setPeople)
+        }, 5000);
+        this.setState({
+          interval2
+        })
+      }
+      // this.setState({
+      //   person: res.name,
+      //   personPosition: res.position
+      // })
       localStorage.setItem( 'Position', res.position )
     }) 
     //updates the people in the line
+    // this.startInterval2()
+    
   }
 
   //function get people length
@@ -245,24 +267,15 @@ export default class AdoptionPage extends Component {
   }
 
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs, interval1, interval2, setInterval2 } = this.context;
-
-    // const pplLength = this.state.people.length;
+    const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs, interval1, interval2, setInterval2} = this.context;
 
     if(personPosition === 1){
       clearInterval(interval1)
     }
 
-    if(people.length === 1) {
-      const interval2 = setInterval(() => {
-        this.addPeopleToQueue(setPeople)
-      }, 5000);
-      setInterval2(interval2)
-    }
-
     if(people.length >= 5) {
       console.log('FIRING!')
-      clearInterval(interval2)
+      clearInterval(this.state.interval2)
     }
     
     return (
@@ -320,7 +333,7 @@ export default class AdoptionPage extends Component {
 
             {(personPosition === 1 && !!person) 
               ? <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople)}>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2)}>
                 Adopt!
               </button>
             </div>
