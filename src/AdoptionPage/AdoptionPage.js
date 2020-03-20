@@ -136,6 +136,64 @@ startInterval2(){
     this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
   }
 
+  handleCatAdoptActuallyClicked(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
+    console.log('cat adopt firing!')
+    //Uses service to make a request to remove the adopted cat from the queue
+    CatService.adoptedCat()
+    .then(res=> {
+      console.log(res, 'res from adoptedCat')
+      this.setState({
+        successfulAdopt: true,
+        adoptee: res.adoptee,
+        human: res.human
+      })
+    })
+    //sets the new next avail cat
+    CatService.getNextAvailCat()
+    .then(res => {
+      setAvailCat(res)
+    })
+    //resets all other cats in the queue
+    CatService.getAllOtherCats()
+      .then(res => {
+        setAllOtherCats(res)
+      })
+    // this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
+    localStorage.clear('Person');
+    localStorage.clear('Position');
+    setPerson('')
+    setPersonPosition('')
+  }
+
+  handleDogAdoptActuallyClicked(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
+    console.log('Dog adopt firing!')
+    //Uses service to make a request to remove the adopted dog from the queue
+    DogService.adoptedDog()
+    .then(res=> {
+      console.log(res, 'res from adoptedDog')
+      this.setState({
+        successfulAdopt: true,
+        adoptee: res.adoptee,
+        human: res.human
+      })
+    })
+    //sets the new next avail dog
+    DogService.getNextAvailDog()
+    .then(res => {
+      setAvailDog(res)
+    })
+    //resets all other dogs in the queue
+    DogService.getAllOtherDogs()
+      .then(res => {
+        setAllOtherDogs(res)
+      })
+    // this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
+    localStorage.clear('Person');
+    localStorage.clear('Position');
+    setPerson('')
+    setPersonPosition('')
+  }
+
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
     console.log('dog adopt firing!')
     //Uses service to make a request to remove the adopted dog from the queue
@@ -248,6 +306,20 @@ startInterval2(){
         setInterval1(interval1);
   }
 
+  handleClearSuccess() {
+    this.setState({
+      successfulAdopt: false
+    })
+  }
+  
+  renderSuccessAdopt(human, pet) {
+    return (
+      <div className='AP_success_adopt'>
+        <p>Yay! {pet} was adopted by {human}!</p><span onClick={e => this.handleClearSuccess()}> X </span>
+      </div>
+    )
+  }
+
   renderNameInput(){
     const {setPerson, setPeople, setPersonPosition, setAvailCat, setAllOtherCats, personPosition} = this.context
     return (
@@ -312,10 +384,10 @@ startInterval2(){
           </div>
         </div>
 
-        {/* render success message if successful adoption 
+        {/* render success message if successful adoption  */}
         {this.state.successfulAdopt ? 
         this.renderSuccessAdopt(this.state.human, this.state.adoptee.name) 
-        : null} */}
+        : null}
         
         <div className='AP_pets_container'>
           <div className='AP_cats'>
@@ -333,7 +405,7 @@ startInterval2(){
 
             {(personPosition === 1 && !!person) 
               ? <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptClick(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2)}>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleCatAdoptActuallyClicked(setAvailCat, setAllOtherCats, personPosition, setPerson, setPersonPosition, setPeople, setInterval2)}>
                 Adopt!
               </button>
             </div>
@@ -367,7 +439,7 @@ startInterval2(){
 
             {(personPosition === 1 && !!person)
               ? <div className='AP_adopt_button'>
-              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptClick(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
+              <button className='AP_adopt_button' type='button' onClick={() => this.handleDogAdoptActuallyClicked(setAvailDog, setAllOtherDogs, person, setPerson, setPersonPosition, setPeople)}>
                 Adopt!
               </button>
             </div>
