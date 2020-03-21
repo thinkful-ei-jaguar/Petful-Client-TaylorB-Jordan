@@ -312,7 +312,7 @@ startInterval2(){
   }
 
   render() {
-    const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs, interval1, interval2, setInterval2} = this.context;
+    const { availDog, allOtherDogs, availCat, allOtherCats, people, person, personPosition, setPerson, setPersonPosition, setPeople, setAvailCat, setAllOtherCats, setAvailDog, setAllOtherDogs, interval1, setInterval2} = this.context;
 
     if(personPosition === 1){
       clearInterval(interval1)
