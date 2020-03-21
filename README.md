@@ -4,22 +4,21 @@ Live App on Zeit [Petful](https://petfuladopt.now.sh/)
 
 <img src="src\readmepics\Screenshot (98).png" alt="Petful Landing Page">
 
-Team Members:
+## Team Members:
 
 Jordan Castillo
+
 Taylor Bradshaw
 
-Tech Stack:
+## Tech Stack:
 
 React
+
 CSS3
 
-Description on Home Page:
+## Description on Home Page:
 
 We work on a first in, first out basis. Only the Cats and Dogs who have been here the longest get adopted first. We hope you find your new furry family member!
-
-
-
 
 <img src="src\readmepics\Screenshot (99).png" alt="Petful Dashboard">
 
