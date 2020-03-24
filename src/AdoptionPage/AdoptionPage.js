@@ -268,7 +268,6 @@ startInterval2(){
     PeopleService.getUsersPlace(newPerson.name)
       .then(res => {
         setPersonPosition(res.position)
-        
         localStorage.setItem( 'Position', res.position )
       }) 
       
