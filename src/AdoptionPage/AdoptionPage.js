@@ -32,8 +32,8 @@ export default class AdoptionPage extends Component {
     const {setAvailDog, setAllOtherDogs, setAvailCat, setAllOtherCats, setPeople, setPerson, setPersonPosition} = this.context;
 
     // get person from local storage 
-    let person = localStorage.getItem( 'Person' );
-    // let personPosition = localStorage.getItem( 'Position' );
+    let currentPerson = localStorage.getItem( 'Person' );
+    //let personPosition = localStorage.getItem( 'Position' );
 
     DogService.getNextAvailDog()
       .then(res => {
@@ -61,8 +61,8 @@ export default class AdoptionPage extends Component {
     })
 
     // If there is a Person in local storage, then we know that user has submitted their name to adopt. Therefore we want to get and keep track of that person's place in line
-    if(!!person){
-      PeopleService.getUsersPlace(person)
+    if(!!currentPerson){
+      PeopleService.getUsersPlace(currentPerson)
       .then(res => {
         setPerson(res.name)
         setPersonPosition(res.position)
@@ -148,11 +148,14 @@ startInterval2(){
       .then(res => {
         setAllOtherCats(res)
       })
-    // this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
+      setPerson('')
+    setPersonPosition('')
     localStorage.clear('Person');
     localStorage.clear('Position');
-    setPerson('')
-    setPersonPosition('')
+    PeopleService.getUsersInline()
+      .then(res => {
+        setPeople(res)
+      }) 
   }
 
   handleDogAdoptActuallyClicked(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople, setInterval2) {
@@ -176,11 +179,15 @@ startInterval2(){
       .then(res => {
         setAllOtherDogs(res)
       })
-    // this.updatePeople(setPerson, setPersonPosition, setPeople, setInterval2);
-    localStorage.clear('Person');
-    localStorage.clear('Position');
+    
     setPerson('')
     setPersonPosition('')
+    localStorage.clear('Person');
+    localStorage.clear('Position');
+    PeopleService.getUsersInline()
+      .then(res => {
+        setPeople(res)
+      }) 
   }
 
   handleDogAdoptClick(setAvailDog, setAllOtherDogs, personPosition, setPerson, setPersonPosition, setPeople) {
