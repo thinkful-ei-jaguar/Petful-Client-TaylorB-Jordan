@@ -51,9 +51,6 @@ const CatService = {
       }
       return res.json()
     })
-    // .then(res => {
-    //   return this.getNextAvailCat();
-    // })
     .catch(err => {
       console.error({err})
     })

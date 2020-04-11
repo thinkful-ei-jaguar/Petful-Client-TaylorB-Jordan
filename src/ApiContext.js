@@ -1,38 +1,38 @@
-import React, {Component} from 'react'
-import PeopleService from '../src/services/people-services'
+import React, { Component } from "react";
+import PeopleService from "../src/services/people-services";
 
 const ApiContext = React.createContext({
   nameSubmitted: null,
-  availDog : {},
+  availDog: {},
   allOtherDogs: [],
   availCat: {},
   allOtherCats: [],
-  person: '',
-  personPosition: '',
+  person: "",
+  personPosition: "",
   people: [],
   succesfulAdopt: null,
   adoptee: {},
-  human: '',
+  human: "",
   interval1: null,
   interval2: null,
   setAvailDog: () => {},
-  setAllOtherDogs : () => {},
+  setAllOtherDogs: () => {},
   setAvailCat: () => {},
   setAllOtherCats: () => {},
   setPerson: () => {},
   setPeople: () => {},
   setInterval1: () => {},
-  setInterval2: () => {}
+  setInterval2: () => {},
 });
 
 export class ApiContextProvider extends Component {
   state = {
-    availDog : {},
+    availDog: {},
     allOtherDogs: [],
     availCat: {},
     allOtherCats: [],
-    person: '',
-    personPosition: '',
+    person: "",
+    personPosition: "",
     people: [],
     interval1: null,
     interval2: null,
@@ -40,82 +40,82 @@ export class ApiContextProvider extends Component {
 
   setAvailDog = (dog) => {
     this.setState({
-      availDog: dog
-    })
-  }
+      availDog: dog,
+    });
+  };
 
   setAllOtherDogs = (dogs) => {
     this.setState({
-      allOtherDogs: dogs
-    })
-  }
+      allOtherDogs: dogs,
+    });
+  };
 
   setAvailCat = (cat) => {
     this.setState({
-      availCat: cat
-    })
-  }
+      availCat: cat,
+    });
+  };
 
   setAllOtherCats = (cats) => {
     this.setState({
-      allOtherCats: cats
-    })
-  }
+      allOtherCats: cats,
+    });
+  };
 
   makeid(length) {
-    let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = "";
+    let characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let charactersLength = characters.length;
-    for ( let i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
- }
+  }
 
   addPeopleToQueue() {
-    const name = this.makeid(7)
-      PeopleService.postNewPerson({name})
-      PeopleService.getUsersInline()
-      .then(res => {
-        this.setPeople(res)
-        this.setState({
-          people: res
-        })
-      })
+    const name = this.makeid(7);
+    PeopleService.postNewPerson({ name });
+    PeopleService.getUsersInline().then((res) => {
+      this.setPeople(res);
+      this.setState({
+        people: res,
+      });
+    });
   }
 
   setPerson = (human) => {
     this.setState({
-      person: human
-    })
-  }
+      person: human,
+    });
+  };
 
   setPersonPosition = (position) => {
     this.setState({
-      personPosition : position
-    })
-  }
+      personPosition: position,
+    });
+  };
 
   setPeople = (humans) => {
     this.setState({
-      people: humans
-    })
-  }
+      people: humans,
+    });
+  };
 
   setInterval1 = (interval1) => {
     this.setState({
-      interval1
-    })
-  }
+      interval1,
+    });
+  };
 
-  setInterval2 = () => {
-    const interval2 = setInterval(() => {
-      this.addPeopleToQueue(this.setPeople)
-    }, 5000);
+  setInterval2 = (interval2) => {
+    // const interval2 = setInterval(() => {
+    //   this.addPeopleToQueue(this.setPeople)
+    // }, 5000);
     this.setState({
-      interval2
-    })
-  }
+      interval2,
+    });
+  };
 
   render() {
     const value = {
@@ -136,15 +136,14 @@ export class ApiContextProvider extends Component {
       setPersonPosition: this.setPersonPosition,
       setPeople: this.setPeople,
       setInterval1: this.setInterval1,
-      setInterval2: this.setInterval2
-    }
-    return(
+      setInterval2: this.setInterval2,
+    };
+    return (
       <ApiContext.Provider value={value}>
         {this.props.children}
       </ApiContext.Provider>
-    )
+    );
   }
 }
-
 
 export default ApiContext;
