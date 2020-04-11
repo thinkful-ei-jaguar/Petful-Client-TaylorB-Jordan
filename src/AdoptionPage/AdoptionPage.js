@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React, { Component } from "react";
 import NextAvail from "../NextAvail/NextAvail";
 import UserList from "../UserList/UserList";
@@ -11,14 +12,11 @@ import "./AdoptionPage.css";
 
 export default class AdoptionPage extends Component {
   static contextType = ApiContext;
+
   constructor(props) {
     super(props);
     this.state = {
-      nameSubmitted: null,
-      // availDog: {},
-      // allOtherDogs: [],
-      // availCat: {},
-      // allOtherCats: [],
+      nameSubmitted: false,
       person: "",
       personPosition: null,
       people: [],
@@ -30,58 +28,66 @@ export default class AdoptionPage extends Component {
 
   async componentDidMount() {
     const {
-      setAvailDog,
-      setAllOtherDogs,
       setAvailCat,
+      setAvailDog,
       setAllOtherCats,
+      setAllOtherDogs,
       setPeople,
-      // setPerson,
-      // setPersonPosition,
     } = this.context;
 
-    // get person from local storage
-    // let currentPerson = localStorage.getItem("Person");
-    // let personPosition = localStorage.getItem( 'Position' );
-
-    const nextDog = await DogService.getNextAvailDog();
-    setAvailDog(nextDog);
-
     const nextCat = await CatService.getNextAvailCat();
-    setAvailCat(nextCat);
-
-    const allDogs = await DogService.getAllOtherDogs();
-    setAllOtherDogs(allDogs);
-
+    const nextDog = await DogService.getNextAvailDog();
     const allCats = await CatService.getAllOtherCats();
-    setAllOtherCats(allCats);
-
+    const allDogs = await DogService.getAllOtherDogs();
     const peopleInLine = await PeopleService.getUsersInline();
+
+    setAvailCat(nextCat);
+    setAvailDog(nextDog);
+    setAllOtherCats(allCats);
+    setAllOtherDogs(allDogs);
     setPeople(peopleInLine);
 
-    // If there is a Person in local storage, then we know that user has submitted their name to adopt. Therefore we want to get and keep track of that person's place in line
-    // if (!!currentPerson) {
-    //   PeopleService.getUsersPlace(currentPerson).then((res) => {
-    //     setPerson(res.name);
-    //     setPersonPosition(res.position);
-    //     this.setState({
-    //       person: res.name,
-    //       personPosition: res.position,
-    //       nameSubmitted: true,
-    //     });
-    //   });
-    // }
+    this.setState({
+      people: peopleInLine,
+    });
   }
 
-  // startInterval2() {
-  //   const { personPosition, setInterval2 } = this.context;
-  //   if (personPosition === 1) {
-  //     console.log("setting interval 2");
-  //     setInterval2();
-  //   }
-  // }
+  async handleNameSubmit(ev) {
+    ev.preventDefault();
+    const { setPerson, setPersonPosition, setPeople } = this.context;
+    const person = ev.target.name.value;
+    const newPerson = { person };
+
+    ev.target.name.value = "";
+    //makes post request to server to add the new person to the queue
+    await PeopleService.postNewPerson(newPerson);
+    const addedPerson = await PeopleService.getUsersPlace(newPerson.person);
+    await setPerson(addedPerson.name);
+    await setPersonPosition(addedPerson.position);
+
+    const peopleInLine = await PeopleService.getUsersInline();
+    await setPeople(peopleInLine);
+
+    this.setState({
+      nameSubmitted: true,
+      person: addedPerson.name,
+      personPosition: addedPerson.position,
+      people: peopleInLine,
+    });
+
+    this.startInterval1();
+  }
+
+  async startInterval1() {
+    const { setInterval1 } = this.context;
+    const interval1 = setInterval(() => {
+      this.incrementNextCat();
+    }, 2000);
+    await setInterval1(interval1);
+  }
 
   // generates randomized string for 'new people' in queue
-  makeid(length) {
+  makeId(length) {
     let result = "";
     let characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -89,264 +95,146 @@ export default class AdoptionPage extends Component {
     for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
+    // console.log(result, "result from makeId");
     return result;
   }
 
-  async addPeopleToQueue(setPeople) {
-    const name = this.makeid(7);
-    // if(this.state.successfulAdopt) {
-    await PeopleService.postNewPerson({ name });
+  async addPeopleToQueue() {
+    const { setPeople } = this.context;
+    const person = this.makeId(7);
+    const newPerson = { person };
+    console.log(newPerson, "new person being added in interval 2");
+    await PeopleService.postNewPerson(newPerson);
     const peopleInLine = await PeopleService.getUsersInline();
-    console.log(peopleInLine, "ppl in line form add people to queue");
+    console.log(peopleInLine, "people in line in add ppl to queue interval");
     setPeople(peopleInLine);
     this.setState({
       people: peopleInLine,
     });
   }
 
-  async handleCatAdoptClick(
-    setAvailCat,
-    setAllOtherCats,
-    // personPosition,
-    setPerson,
-    setPersonPosition,
-    setPeople,
-    setInterval2
-  ) {
+  async startInterval2() {
+    console.log("setting interval 2");
+    const { setInterval2 } = this.context;
+    const interval2 = setInterval(() => {
+      this.addPeopleToQueue();
+    }, 2000);
+    await setInterval2(interval2);
+  }
+
+  async incrementNextCat() {
+    const { setAvailCat, setAllOtherCats } = this.context;
+    this.setState({
+      adoptionOccurring: true,
+    });
+
     //Uses service to make a request to remove the adopted cat from the queue
     await CatService.adoptedCat();
 
     const availCat = await CatService.getNextAvailCat();
     setAvailCat(availCat);
-    // console.log(availCat, "next available cat");
 
-    //resets all other cats in the queue
     const allCats = await CatService.getAllOtherCats();
     setAllOtherCats(allCats);
-    // console.log(allCats, "all other cats");
 
-    await this.updatePeople(
+    await this.updatePeople();
+  }
+
+  async updatePeople() {
+    const { setPersonPosition, setPeople } = this.context;
+    //Get users incremented position in line
+    const personPosition = await PeopleService.getUsersPlace(this.state.person);
+    await setPersonPosition(personPosition.position);
+
+    //Get people in line from the server
+    const peopleInLine = await PeopleService.getUsersInline();
+    console.log(peopleInLine, "people in line from server in update people");
+    await setPeople(peopleInLine);
+
+    this.setState({
+      personPosition: personPosition.position,
+      adoptionOccurring: false,
+      people: peopleInLine,
+    });
+
+    if (this.state.personPosition == 1 || peopleInLine.length == 1) {
+      console.log("setting interval 2 - adding ppl to list");
+      this.startInterval2();
+    }
+  }
+
+  async handlePetActuallyClicked(petKind) {
+    const {
+      setAvailCat,
+      setAllOtherCats,
+      setAvailDog,
+      setAllOtherDogs,
       setPerson,
       setPersonPosition,
       setPeople,
-      setInterval2
-    );
-  }
-
-  async handleCatAdoptActuallyClicked(
-    setAvailCat,
-    setAllOtherCats,
-    personPosition,
-    setPerson,
-    setPersonPosition,
-    setPeople,
-    setInterval2
-  ) {
-    //Uses service to make a request to remove the adopted cat from the queue
-    const adoption = await CatService.adoptedCat();
-    console.log(adoption, "res from adoptedCat");
-
-    this.setState({
-      successfulAdopt: true,
-      adoptee: adoption.adoptee,
-      human: adoption.human,
-      person: "",
-      personPosition: null,
-    });
-
-    //sets the new next avail cat
-    const nextCat = await CatService.getNextAvailCat();
-
-    setAvailCat(nextCat);
-
-    //resets all other cats in the queue
-    const allCats = await CatService.getAllOtherCats();
-    setAllOtherCats(allCats);
-
-    await this.context.setPerson("");
-    await this.context.setPersonPosition("");
-    this.setState({
-      person: "",
-      personPosition: null,
-    });
-    const peopleInLine = await PeopleService.getUsersInline();
-    setPeople(peopleInLine);
-
-    const interval1 = setInterval(() => {
-      this.handleCatAdoptClick(
-        setAvailCat,
-        setAllOtherCats,
-        // personPosition,
-        setPerson,
-        setPersonPosition,
-        setPeople
-      );
-    }, 2000);
-    await this.context.setInterval1(interval1);
-  }
-
-  handleDogAdoptActuallyClicked(
-    setAvailDog,
-    setAllOtherDogs,
-    personPosition,
-    setPerson,
-    setPersonPosition,
-    setPeople,
-    setInterval2
-  ) {
-    //Uses service to make a request to remove the adopted dog from the queue
-    DogService.adoptedDog().then((res) => {
+    } = this.context;
+    if (petKind === "cat") {
+      const adoption = await CatService.adoptedCat();
+      console.log(petKind, adoption, "kind and adoption details");
       this.setState({
         successfulAdopt: true,
-        adoptee: res.adoptee,
-        human: res.human,
+        adoptee: adoption.adoptee,
+        human: adoption.human,
       });
-    });
-    //sets the new next avail dog
-    DogService.getNextAvailDog().then((res) => {
-      setAvailDog(res);
-    });
-    //resets all other dogs in the queue
-    DogService.getAllOtherDogs().then((res) => {
-      setAllOtherDogs(res);
-    });
 
-    setPerson("");
-    setPersonPosition("");
-    localStorage.clear("Person");
-    localStorage.clear("Position");
-    PeopleService.getUsersInline().then((res) => {
-      setPeople(res);
-    });
-  }
-
-  handleDogAdoptClick(
-    setAvailDog,
-    setAllOtherDogs,
-    personPosition,
-    setPerson,
-    setPersonPosition,
-    setPeople
-  ) {
-    console.log("dog adopt firing!");
-    //Uses service to make a request to remove the adopted dog from the queue
-    DogService.adoptedDog().then((res) => {
+      const nextCat = await CatService.getNextAvailCat();
+      const allCats = await CatService.getAllOtherCats();
+      console.log(nextCat, allCats, "!!!");
+      await setAvailCat(nextCat);
+      await setAllOtherCats(allCats);
+    } else if (petKind === "dog") {
+      const adoption = await DogService.adoptedDog();
+      console.log(petKind, adoption, "kind and adoption details - DOG");
       this.setState({
         successfulAdopt: true,
-        adoptee: res.adoptee,
-        human: res.human,
+        adoptee: adoption.adoptee,
+        human: adoption.human,
       });
-    });
-    //sets the new next avail dog
-    DogService.getNextAvailDog().then((res) => {
-      setAvailDog(res);
-    });
-    //resets all other dogs in the queue
-    DogService.getAllOtherDogs().then((res) => {
-      setAllOtherDogs(res);
-    });
-    this.updatePeople(setPerson, setPersonPosition, setPeople);
-  }
 
-  async updatePeople(setPerson, setPersonPosition, setPeople, setInterval2) {
-    const peopleInLine = await PeopleService.getUsersInline();
-    setPeople(peopleInLine);
-    console.log(peopleInLine, "people in line in update people function");
-    console.log(
-      this.state.person,
-      "person in state being sent to get users place"
-    );
-    //increments the persons place in line everytime a cat is adopted
-    const usersPosition = await PeopleService.getUsersPlace(this.state.person);
-    console.log(
-      usersPosition,
-      "users position from get users place response in update people function"
-    );
-    await setPerson(usersPosition.name);
-    await setPersonPosition(usersPosition.position);
-    console.log(this.context.personPosition, "user position from context");
-    if (this.context.personPosition == 1 || peopleInLine.length == 1) {
-      console.log("setting interval 2");
-      // setInterval2();
-      const interval2 = setInterval(() => {
-        this.addPeopleToQueue(setPeople);
-      }, 2000);
-      this.context.setInterval2(interval2);
-      // this.setState({
-      //   interval2,
-      // });
+      const nextDog = await DogService.getNextAvailDog();
+      const allDogs = await DogService.getAllOtherDogs();
+      console.log(nextDog, allDogs, "!!!");
+      await setAvailDog(nextDog);
+      await setAllOtherDogs(allDogs);
+    } else {
+      console.log("error occuring in handlePetActuallyClicked");
     }
-    // localStorage.setItem("Position", res.position);
-  }
 
-  async handleNameSubmit(
-    e,
-    setPerson,
-    setPeople,
-    setPersonPosition,
-    setAvailCat,
-    setAllOtherCats
-    // personPosition
-  ) {
-    e.preventDefault();
-    const { setInterval1 } = this.context;
-    const name = e.target.name.value;
-    //sets local storage with the person name just submitted
-    // localStorage.setItem("Person", name);
-    //clears input value
-    e.target.name.value = "";
-    const newPerson = { name };
-    //makes post request to server to add the new person to the queue
-    const addedPerson = await PeopleService.postNewPerson(newPerson);
-    console.log(addedPerson, "added person from post response");
-
-    await setPerson(addedPerson.name);
-    await setPersonPosition(addedPerson.position);
-    //gets new person position in line to set
-    const userPosition = await PeopleService.getUsersPlace(newPerson.name);
-    console.log(userPosition, "added persons position");
+    const people = await PeopleService.getUsersInline();
+    console.log(people, "people in petActuallyClicked!!!");
+    await setPerson("");
+    await setPersonPosition("");
+    await setPeople(people);
     this.setState({
-      person: userPosition.name,
-      position: userPosition.position,
-      nameSubmitted: true,
+      person: "",
+      personPosition: null,
+      people,
+      nameSubmitted: false,
     });
-    console.log(this.state.person, this.state.position);
-    // localStorage.setItem("Position", res.position);
-
-    //resets the people in line so the new person is included
-    const peopleInLine = await PeopleService.getUsersInline();
-    // console.log(peopleInLine, "updated people in line after submitting a name");
-    setPeople(peopleInLine);
-
-    //begins interval
-    const interval1 = setInterval(() => {
-      // const intervalFuncs = [
-      //   this.handleCatAdoptClick(
-      // setAvailCat,
-      // setAllOtherCats,
-      // personPosition,
-      // setPerson,
-      // setPersonPosition,
-      // setPeople
-      //   ),
-      // ];
-
-      // function getFunc(intervalFuncs) {
-      //   let randNum = Math.floor(Math.random() * intervalFuncs.length - 1);
-      //   return intervalFuncs[randNum];
-      // }
-      // getFunc(intervalFuncs);
-      this.handleCatAdoptClick(
-        setAvailCat,
-        setAllOtherCats,
-        // personPosition,
-        setPerson,
-        setPersonPosition,
-        setPeople
-      );
-    }, 2000);
-    await setInterval1(interval1);
+    // this.startInterval2();
   }
+
+  renderNameInput = () => {
+    return (
+      <section className="AP_name_input">
+        <form
+          onSubmit={(e) => this.handleNameSubmit(e)}
+          className="Name_input_form"
+        >
+          <label>Submit your name below to be added to the adoption line</label>
+          <input type="text" name="name"></input>
+          <button type="submit" className="AP_adopt_button">
+            Submit
+          </button>
+        </form>
+      </section>
+    );
+  };
 
   handleClearSuccess() {
     this.setState({
@@ -365,61 +253,17 @@ export default class AdoptionPage extends Component {
     );
   }
 
-  renderNameInput() {
-    const {
-      setPerson,
-      setPeople,
-      setPersonPosition,
-      setAvailCat,
-      setAllOtherCats,
-      personPosition,
-    } = this.context;
-    return (
-      <section className="AP_name_input">
-        <form
-          onSubmit={(e) =>
-            this.handleNameSubmit(
-              e,
-              setPerson,
-              setPeople,
-              setPersonPosition,
-              setAvailCat,
-              setAllOtherCats,
-              personPosition
-            )
-          }
-          className="Name_input_form"
-        >
-          <label>Submit your name below to be added to the adoption line</label>
-          <input type="text" name="name"></input>
-          <button type="submit" className="AP_adopt_button">
-            Submit
-          </button>
-        </form>
-      </section>
-    );
-  }
-
   render() {
     const {
       availDog,
       allOtherDogs,
       availCat,
       allOtherCats,
-      people,
-      person,
-      personPosition,
-      setPerson,
-      setPersonPosition,
-      setPeople,
-      setAvailCat,
-      setAllOtherCats,
-      setAvailDog,
-      setAllOtherDogs,
       interval1,
       interval2,
-      setInterval2,
     } = this.context;
+
+    const { person, personPosition, people } = this.state;
 
     if (personPosition == 1 || people.length <= 1) {
       clearInterval(interval1);
@@ -442,9 +286,13 @@ export default class AdoptionPage extends Component {
         </header>
 
         {/* if there is a person logged in local storage, that means they have submitted their name, therefore do not show the input form - show the tracking of their place in line */}
-        {!!person || !!this.state.person ? (
+        {this.state.nameSubmitted ? (
           <div>
-            <UsersPlace name={person} position={personPosition} key={person} />
+            <UsersPlace
+              name={this.state.person}
+              position={this.state.personPosition}
+              key={person}
+            />
           </div>
         ) : (
           this.renderNameInput()
@@ -465,9 +313,8 @@ export default class AdoptionPage extends Component {
         </div>
 
         {/* render success message if successful adoption  */}
-        {this.state.successfulAdopt
-          ? this.renderSuccessAdopt(this.state.human, this.state.adoptee.name)
-          : null}
+        {this.state.successfulAdopt &&
+          this.renderSuccessAdopt(this.state.human, this.state.adoptee.name)}
 
         <div className="AP_pets_container">
           <div className="AP_cats">
@@ -483,27 +330,17 @@ export default class AdoptionPage extends Component {
               key={availCat.name}
             />
 
-            {(personPosition === 1 || personPosition === "") && !!person ? (
+            {!!person && personPosition == 1 && (
               <div className="AP_adopt_button">
                 <button
                   className="AP_adopt_button"
                   type="button"
-                  onClick={() =>
-                    this.handleCatAdoptActuallyClicked(
-                      setAvailCat,
-                      setAllOtherCats,
-                      personPosition,
-                      setPerson,
-                      setPersonPosition,
-                      setPeople,
-                      setInterval2
-                    )
-                  }
+                  onClick={() => this.handlePetActuallyClicked("cat")}
                 >
                   Adopt!
                 </button>
               </div>
-            ) : null}
+            )}
 
             <p className="AP_next_avail">Next Available Cats</p>
             {allOtherCats.map((cat) => (
@@ -534,16 +371,7 @@ export default class AdoptionPage extends Component {
                 <button
                   className="AP_adopt_button"
                   type="button"
-                  onClick={() =>
-                    this.handleDogAdoptActuallyClicked(
-                      setAvailDog,
-                      setAllOtherDogs,
-                      person,
-                      setPerson,
-                      setPersonPosition,
-                      setPeople
-                    )
-                  }
+                  onClick={() => this.handlePetActuallyClicked("dog")}
                 >
                   Adopt!
                 </button>
